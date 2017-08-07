@@ -81,11 +81,9 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         this.output.setText(chat + person + ": " + message + "\n");
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
     }
 
-    @Override
     public void keyTyped(KeyEvent e) {
         if (e.getSource() == this.input) {
             if (e.getKeyChar() == '\n') {
@@ -95,16 +93,15 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         }
     }
 
-    @Override
     public void keyPressed(KeyEvent e) {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
     public void keyReleased(KeyEvent e) {
         // TODO Auto-generated method stub
 
     }
+
 }
 
