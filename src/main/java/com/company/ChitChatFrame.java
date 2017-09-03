@@ -31,12 +31,17 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     private JTextField vzdevekInput;
     private JButton prijava;
     private JButton odjava;
+    private JPanel uporabniki;
+    private JTextPane uporabnikiOutput;
+    private JButton javno;
+    private JButton zasebno;
 
     public ChitChatFrame() {
         super();
         setTitle("ChitChat");
         Container pane = this.getContentPane();
         pane.setLayout(new GridBagLayout());
+
 
         this.vzdevek = new JPanel();
         JLabel napis = new JLabel("Vzdevek");
@@ -57,9 +62,42 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         odjava = new JButton("Odjava");
         prijava.addActionListener(this);
         odjava.addActionListener(this);
-        odjava.setEnabled(true);
+        odjava.setEnabled(false);
         vzdevek.add(prijava);
         vzdevek.add(odjava);
+
+
+        // seznam uporabnikov
+        this.uporabniki = new JPanel();
+        JLabel napis2 = new JLabel ("Uporabniki: ");
+        this.uporabnikiOutput = new JTextPane();
+        uporabnikiOutput.setPreferredSize(new Dimension(100, 200));
+        this.uporabnikiOutput.setEditable(false);
+
+        uporabniki.setLayout(new BoxLayout(uporabniki, BoxLayout.Y_AXIS));
+        uporabniki.add(napis2);
+        uporabniki.add(uporabnikiOutput);
+        uporabniki.setVisible(true);
+
+
+        JScrollPane scrolPane = new JScrollPane(uporabniki);
+        scrolPane.setPreferredSize(new Dimension(100, 300));
+
+        GridBagConstraints uporabnikiCon = new GridBagConstraints();
+        uporabnikiCon.fill = GridBagConstraints.BOTH;
+        uporabnikiCon.weightx = 1.0;
+        uporabnikiCon.weighty = 0.5;
+        uporabnikiCon.gridx = 1;
+        uporabnikiCon.gridy = 1;
+        pane.add(uporabniki, uporabnikiCon);
+
+        javno = new JButton("Javno");
+        zasebno = new JButton("Zasebno");
+        javno.addActionListener(this);
+        zasebno.addActionListener(this);
+        zasebno.setEnabled(false);
+        uporabniki.add(zasebno);
+        uporabniki.add(javno);
 
 
 
@@ -73,7 +111,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         outputConstraint.fill = GridBagConstraints.BOTH;
         outputConstraint.weightx = 1.0;
         outputConstraint.weighty = 1.0;
-        outputConstraint.gridx = 0;
+        outputConstraint.gridx =0;
         outputConstraint.gridy = 1;
         pane.add(scrollPane, outputConstraint);
 
@@ -201,6 +239,13 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         // TODO Auto-generated method stub
 
     }
+
+
+    public void izpisiUporabnika(String oseba){
+        //TODO
+        }
+
+
 
 
     public void keyReleased(KeyEvent e) {
