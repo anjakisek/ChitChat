@@ -211,6 +211,10 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         }
     }
 
+    public void sprejmiSporocilo(){
+        //TODO
+    }
+
 
 
 

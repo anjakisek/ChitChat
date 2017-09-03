@@ -1,7 +1,35 @@
 package com.company;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by Anja on 3. 09. 2017.
  */
-public class PrejetoRobot {
+
+// robot bo vsake toliko sprožil preverjanje, ali imamo kakšno novo sporočilo
+public class PrejetoRobot extends TimerTask {
+
+    private ChitChatFrame chat;
+
+    //Ko ga aktiviramo, zacne meriti cas
+    public void activate() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(this, 4000, 4000);
+    }
+
+    public PrejetoRobot(ChitChatFrame chat) {
+        this.chat = chat;
+    }
+
+    public void run(){
+        try{chat.sprejmiSporocilo();
+        }
+        catch (URISyntaxException e) {
+            e.printStackTrace();
+
+
+    }
 }
