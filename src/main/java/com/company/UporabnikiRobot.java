@@ -32,21 +32,11 @@ public class UporabnikiRobot extends TimerTask {
                 .returnContent()
                 .asString();
             //Dobili smo seznam uporabnikov
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setDateFormat(new ISO8601DateFormat());
 
-            TypeReference<List<Uporabnik>> t = new TypeReference<List<Uporabnik>>() { };
-            List<Uporabnik> sodelujoci = mapper.readValue(responseBody, t);
-            chat.pocistiSodelujoce();
 
-            for (Uporabnik oseba : sodelujoci) {
-                chat.zapisiSodelujocega(oseba);
-            }
 
 
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (BadLocationException e) {
             e.printStackTrace();
         }
 
