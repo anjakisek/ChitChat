@@ -25,10 +25,9 @@ public class PrejetoRobot extends TimerTask {
     }
 
     public void run(){
-        try{chat.sprejmiSporocilo();
-        }
-        catch (URISyntaxException e) {
-            e.printStackTrace();
+        chat.sprejmiSporocilo();
+
+
 
 
     }
