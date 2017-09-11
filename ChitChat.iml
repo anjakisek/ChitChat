@@ -17,5 +17,6 @@
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.2.3" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.2.2" level="project" />
+    <orderEntry type="library" name="com.fasterxml.jackson.core:jackson-databind:2.0.0-RC2" level="project" />
   </component>
 </module>

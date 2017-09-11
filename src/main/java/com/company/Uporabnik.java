@@ -1,5 +1,7 @@
 package com.company;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Date;
 
 /**
@@ -25,6 +27,7 @@ public class Uporabnik {
         this.username = username;
     }
 
+    @JsonProperty("username")
     public String getUsername(){
         return this.username;
     }
@@ -33,6 +36,7 @@ public class Uporabnik {
         this.lastActive = lastActive;
     }
 
+    @JsonProperty("lastActive")
     public Date getLastActive(){
         return this.lastActive;
     }

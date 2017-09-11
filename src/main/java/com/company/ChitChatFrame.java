@@ -1,26 +1,12 @@
 package com.company;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.utils.URIBuilder;
-
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-
-import javax.swing.*;
+import java.util.ArrayList;
 
 public class ChitChatFrame extends JFrame implements ActionListener, KeyListener {
 
@@ -36,7 +22,6 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     private JButton javnoGumb;
     private JTextField zasebnoGumb;
     private boolean javno;
-    private boolean zasebno;
 
     public ChitChatFrame() {
         super();
@@ -47,13 +32,12 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
         //Prednastavljeno je na javno sporočilo
         this.javno = true;
-        this.zasebno = false;
 
 
         this.vzdevek = new JPanel();
         JLabel napis = new JLabel("Vzdevek");
         this.vzdevekInput = new JTextField(System.getProperty("user.name"), 40);
-        this.vzdevekInput.setEditable(false);
+        this.vzdevekInput.setEditable(true);
         FlowLayout vzdevekFlow = new FlowLayout();
         vzdevek.setLayout(vzdevekFlow);
         vzdevek.add(napis);
@@ -186,7 +170,6 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         } else if (e.getSource() == javnoGumb){
             javnoGumb.setEnabled(false);
             this.javno = true;
-            this.zasebno = false;
             zasebnoGumb.setEditable(true);
         }
         }
@@ -198,13 +181,14 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
                 if (this.javno == true) {
                     this.izpisiSporocilo(this.vzdevekInput.getText(), this.input.getText());
 
+                } else if (this.javno == false){
+                    this.izpisiSporocilo(this.vzdevekInput.getText() + " to " + this.uporabnikiOutput.getText(), this.input.getText());
                 }
 
                 this.input.setText("");
             }
         } else if (e.getSource() == this.zasebnoGumb){
             if (e.getKeyChar() == '\n'){
-                this.zasebno = true;
                 this.javno = false;
                 this.zasebnoGumb.setEditable(false);
                 this.javnoGumb.setEnabled(true);
@@ -213,8 +197,21 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     }
 
     public void sprejmiSporocilo(){
-        //TODO
-    }
+        ArrayList<PrejetoSporocilo> seznam = Server.prejeto(this.vzdevekInput.getText());
+        for (PrejetoSporocilo posta : seznam) {
+            boolean global = posta.getGlobal();
+            String recipient = posta.getRecipient();
+            String sender = posta.getSender();
+            String text = posta.getText();
+            String sendAt = posta.getSentAt();
+
+            if (global){
+                izpisiSporocilo(sender, text + " (send at " + sendAt + ")");
+            } else {
+                izpisiSporocilo(sender + " to " + recipient, text + " (send at " + sendAt + ")");
+            }
+
+    }}
 
 
 
