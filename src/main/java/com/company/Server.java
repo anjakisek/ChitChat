@@ -21,14 +21,17 @@ import java.util.List;
  */
 public class Server {
 
-    public static boolean prijava (String uporabnik){
+    //PRIJAVA
+    public static boolean prijava (String uporabnik) {
         try {
             URI uri = new URIBuilder("http://chitchat.andrej.com/users")
                     .addParameter("username", uporabnik).build();
             HttpResponse response = Request.Post(uri).execute().returnResponse();
+            System.out.println(response.getStatusLine());
             InputStream responseBody = null;
 
             if (response.getStatusLine().getStatusCode()==200) {
+                System.out.println("vse je ok");
                 return true;
             }
 
@@ -37,9 +40,11 @@ public class Server {
         } catch (URISyntaxException e1) {
             e1.printStackTrace();
         }
+        System.out.println("neka napaka je");
         return false;
     }
 
+    //ODJAVA
     public static boolean odjava (String uporabnik) {
         try {
             URI uri = new URIBuilder("http://chitchat.andrej.com/users")
@@ -63,6 +68,7 @@ public class Server {
 
 
 
+    //POSILJANJE JAVNEGA SPOROCILA
     public static void sentGlobal (String posiljatelj, String sporocilo){
         try{
             URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
@@ -87,6 +93,7 @@ public class Server {
         }
     }
 
+    //POSILJANJE ZASEBNEGA SPOROCILA
     public static void sentPrivate (String posiljatelj, String prejemnik, String sporocilo ){
         try{
             URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
@@ -111,6 +118,7 @@ public class Server {
         }
     }
 
+    // SPREJME PREJETA SPOROCILA
     public static ArrayList<PrejetoSporocilo> prejeto(String prejemnik) {
         try{
             URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
@@ -126,9 +134,9 @@ public class Server {
             mapper.setDateFormat(new ISO8601DateFormat());
 
             TypeReference<List<PrejetoSporocilo>> t = new TypeReference<List<PrejetoSporocilo>>() { };
-            ArrayList<PrejetoSporocilo> prejetaSporocila = mapper.readValue(responseBody, t);
+            //ArrayList<PrejetoSporocilo> prejetaSporocila = mapper.readValue(responseBody, t);
 
-            return prejetaSporocila;
+            return mapper.readValue(responseBody, t);
 
         } catch (IOException e) {
             e.printStackTrace();

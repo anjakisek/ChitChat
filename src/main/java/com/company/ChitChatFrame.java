@@ -2,10 +2,6 @@ package com.company;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class ChitChatFrame extends JFrame implements ActionListener, KeyListener {
@@ -23,7 +19,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     private JTextField zasebnoGumb;
     private boolean javno;
 
-    PrejetoRobot robot;
+    private PrejetoRobot robot;
 
     public ChitChatFrame() {
         super();
@@ -36,6 +32,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         this.javno = true;
 
 
+        // Zgornje okence za vnos uporabniskega imena
         this.vzdevek = new JPanel();
         JLabel napis = new JLabel("Vzdevek");
         this.vzdevekInput = new JTextField(System.getProperty("user.name"), 40);
@@ -50,7 +47,8 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         pane.add(vzdevek, vzdevekConstraint);
         vzdevek.addKeyListener(this);
 
-        //gumba prijava odjava
+
+        //gumba prijava odjava zgoraj
         prijava = new JButton("Prijava");
         odjava = new JButton("Odjava");
         prijava.addActionListener(this);
@@ -60,7 +58,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         vzdevek.add(odjava);
 
 
-        // seznam uporabnikov
+        // seznam uporabnikov desno
         this.uporabniki = new JPanel();
         JLabel napis2 = new JLabel ("Uporabniki: ");
         this.uporabnikiOutput = new JTextPane();
@@ -84,6 +82,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         uporabnikiCon.gridy = 1;
         pane.add(uporabniki, uporabnikiCon);
 
+        //Gumba javno in zasebno, kamor se vpise uporabnika za zasebno sporocilo
         javnoGumb = new JButton("Javno");
         zasebnoGumb = new JTextField("Tu vpisi prejemnika");
         javnoGumb.addActionListener(this);
@@ -96,6 +95,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
 
 
+        //Glavno okno za izpis sporocil
 
         this.output = new JTextPane();
         JScrollPane scrollPane = new JScrollPane(output);
@@ -110,6 +110,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         pane.add(scrollPane, outputConstraint);
 
 
+        // Okno na dnu, kamor se vnasa sporocila za posiljanje
         this.input = new JTextField(40);
         this.input.setEditable(false);
         GridBagConstraints inputConstraint = new GridBagConstraints();
@@ -133,13 +134,17 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
      * @param person - the person sending the message
      * @param message - the message content
      */
+    // izpise sporocilo v glavno okno
 
     public void izpisiSporocilo(String person, String message) {
         String chat = this.output.getText();
         this.output.setText(chat + person + ": " + message + "\n");
     }
 
+    // odziva se na klike na gumbe
     public void actionPerformed(ActionEvent e) {
+
+        //PRIJAVA
         if (e.getSource() == prijava) {
             //Ce je prijava uspesna
             if (Server.prijava(this.vzdevekInput.getText())){
@@ -154,9 +159,11 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
                 this.javnoGumb.setEnabled(true);
                 izpisiSporocilo(this.vzdevekInput.getText(), "Uspesno prijavljen!");
             } else {
+                //ce prijava ni uspesna
                 izpisiSporocilo(this.vzdevekInput.getText(), "Ni uspesno prijavljen!");
             }
 
+            //ODJAVA
         }else if(e.getSource() == odjava){
             if (Server.odjava(this.vzdevekInput.getText())){
                 this.prijava.setEnabled(true);
@@ -169,6 +176,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
                 izpisiSporocilo(this.vzdevekInput.getText(), "Neuspesno odjavljen!");
             }
 
+            //Ce je gumb javno ugasnjen, posiljamo sporocila javno, ce je onemogoceno pisanje prejemnika, vpisanemu prejemniku posljemo zasebno sporocilo
         } else if (e.getSource() == javnoGumb){
             javnoGumb.setEnabled(false);
             this.javno = true;
@@ -177,6 +185,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         }
 
 
+        // ob kliku na enter poslje sporocilo
     public void keyTyped(KeyEvent e) {
         if (e.getSource() == this.input) {
             if (e.getKeyChar() == '\n') {
@@ -198,6 +207,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         }
     }
 
+    //prejeta sporocila prepozna in jih izpise na ekran
     public void sprejmiSporocilo(){
         ArrayList<PrejetoSporocilo> seznam = Server.prejeto(this.vzdevekInput.getText());
         for (PrejetoSporocilo posta : seznam) {
@@ -219,26 +229,6 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
 
 
-    private static String getStringFromInputStream(InputStream is) {
-        BufferedReader br = null;
-        StringBuilder sb = new StringBuilder();
-        String line;
-        try {br = new BufferedReader(new InputStreamReader(is));
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return sb.toString();}
 
     public void keyPressed(KeyEvent e) {
         // TODO Auto-generated method stub
@@ -246,6 +236,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     }
 
 
+    //danega uporabnika izpise na ekran
     public void izpisiUporabnika(Uporabnik oseba){
         String username = oseba.getUsername();
         String lastActive = oseba.getLastActive();
@@ -255,6 +246,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
 
 
+        //pobrise uporabnike na ekranu
     public void pobrisiUporabnike(){
         this.uporabnikiOutput.setText("");
     }
