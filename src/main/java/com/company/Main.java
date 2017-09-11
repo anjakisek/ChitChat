@@ -4,8 +4,8 @@ public class Main {
 
     public static void main(String[] args) {
         ChitChatFrame chatFrame = new ChitChatFrame();
-
-        //robot.activate();
+        UporabnikiRobot robot = new UporabnikiRobot(chatFrame);
+        robot.activate();
         chatFrame.pack();
         chatFrame.setVisible(true);
     }

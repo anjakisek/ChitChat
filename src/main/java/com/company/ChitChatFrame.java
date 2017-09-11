@@ -23,6 +23,8 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     private JTextField zasebnoGumb;
     private boolean javno;
 
+    PrejetoRobot robot;
+
     public ChitChatFrame() {
         super();
         setTitle("ChitChat");
@@ -142,7 +144,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
             //Ce je prijava uspesna
             if (Server.prijava(this.vzdevekInput.getText())){
                 if (prvicZagnan) {
-                    //preveriNovaSporocila.activate();
+                    robot.activate();
                     prvicZagnan=false;
                 }
                 this.prijava.setEnabled(false);
@@ -244,13 +246,18 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     }
 
 
-    public void izpisiUporabnika(String oseba){
+    public void izpisiUporabnika(Uporabnik oseba){
+        String username = oseba.getUsername();
+        String lastActive = oseba.getLastActive();
         String aktivni = this.uporabnikiOutput.getText();
-        this.uporabnikiOutput.setText(aktivni + oseba + "\n");
+        this.uporabnikiOutput.setText(aktivni + username + " (last active: " + lastActive + " ) \n");
         }
 
 
 
+    public void pobrisiUporabnike(){
+        this.uporabnikiOutput.setText("");
+    }
 
     public void keyReleased(KeyEvent e) {
         // TODO Auto-generated method stub

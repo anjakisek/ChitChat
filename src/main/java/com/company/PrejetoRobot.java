@@ -1,7 +1,5 @@
 package com.company;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,7 +15,7 @@ public class PrejetoRobot extends TimerTask {
     //Ko ga aktiviramo, zacne meriti cas
     public void activate() {
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(this, 4000, 4000);
+        timer.scheduleAtFixedRate(this, 3000, 3000);
     }
 
     public PrejetoRobot(ChitChatFrame chat) {

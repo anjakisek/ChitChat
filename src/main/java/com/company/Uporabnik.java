@@ -2,18 +2,16 @@ package com.company;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Date;
-
 /**
  * Created by Anja on 3. 09. 2017.
  */
 public class Uporabnik {
     //Vsak uporabnik je svoj objekt z atributoma username in lastActive
     private String username;
-    private Date lastActive;
+    private String lastActive;
 
     //ustvari uporabnika
-    public Uporabnik(String username, Date lastActive){
+    public Uporabnik(String username, String lastActive){
         this.username = username;
         this.lastActive = lastActive;
 
@@ -32,12 +30,12 @@ public class Uporabnik {
         return this.username;
     }
 
-    public void setLastActive(Date lastActive){
+    public void setLastActive(String lastActive){
         this.lastActive = lastActive;
     }
 
     @JsonProperty("lastActive")
-    public Date getLastActive(){
+    public String getLastActive(){
         return this.lastActive;
     }
 

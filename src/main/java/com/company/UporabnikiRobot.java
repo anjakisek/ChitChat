@@ -1,9 +1,13 @@
 package com.company;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.apache.http.client.fluent.Request;
 
-import javax.swing.text.BadLocationException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,7 +22,7 @@ public class UporabnikiRobot extends TimerTask {
     //Ko ga aktiviramo, zacne meriti cas
     public void activate() {
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(this, 4000, 4000);
+        timer.scheduleAtFixedRate(this, 3000, 3000);
     }
 
     public UporabnikiRobot(ChitChatFrame chat) {
@@ -32,6 +36,18 @@ public class UporabnikiRobot extends TimerTask {
                 .returnContent()
                 .asString();
             //Dobili smo seznam uporabnikov
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setDateFormat(new ISO8601DateFormat());
+
+            TypeReference<List<Uporabnik>> t = new TypeReference<List<Uporabnik>>() { };
+            ArrayList<Uporabnik> uporabniki = mapper.readValue(responseBody, t);
+
+            chat.pobrisiUporabnike();
+
+            for (Uporabnik oseba: uporabniki){
+                chat.izpisiUporabnika(oseba);
+            }
 
 
 
