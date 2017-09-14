@@ -7,17 +7,18 @@ public class PrejetoSporocilo {
     private String recipient;
     private String sender;
     private String text;
-    private String sentAt;
+    private String sent_at;
 
     private PrejetoSporocilo(){}
 
-    public PrejetoSporocilo(Boolean global, String recipient, String sender, String text, String sentAt) {
+    public PrejetoSporocilo(Boolean global, String recipient, String sender, String text, String sent_at) {
         this.global = global;
         this.recipient = recipient;
         this.sender = sender;
         this.text = text;
-        this.sentAt = sentAt;
+        this.sent_at = sent_at;
     }
+
 
 
     @JsonProperty("global")
@@ -60,13 +61,13 @@ public class PrejetoSporocilo {
         this.text = text;
     }
 
-    @JsonProperty("sentAt")
+    @JsonProperty("sent_at")
     public String getSentAt() {
-        return sentAt;
+        return sent_at;
     }
 
 
-    public void setSentAt(String sentAt) {
-        this.sentAt = sentAt;
+    public void setSentAt(String sent_at) {
+        this.sent_at = sent_at;
     }
 }

@@ -1,9 +1,10 @@
 package com.company;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
@@ -22,7 +23,7 @@ import java.util.List;
 public class Server {
 
     //PRIJAVA
-    public static boolean prijava (String uporabnik) {
+    public static boolean prijava(String uporabnik) {
         try {
             URI uri = new URIBuilder("http://chitchat.andrej.com/users")
                     .addParameter("username", uporabnik).build();
@@ -30,7 +31,7 @@ public class Server {
             System.out.println(response.getStatusLine());
             InputStream responseBody = null;
 
-            if (response.getStatusLine().getStatusCode()==200) {
+            if (response.getStatusLine().getStatusCode() == 200) {
                 System.out.println("vse je ok");
                 return true;
             }
@@ -45,7 +46,7 @@ public class Server {
     }
 
     //ODJAVA
-    public static boolean odjava (String uporabnik) {
+    public static boolean odjava(String uporabnik) {
         try {
             URI uri = new URIBuilder("http://chitchat.andrej.com/users")
                     .addParameter("username", uporabnik)
@@ -67,86 +68,93 @@ public class Server {
     }
 
 
+    //POSILJANJE ZASEBNEGA SPOROCILA
+    public static void sendPrivateMessage(String sender, String receiver, String content) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        URI uri = null;
+        String responseBody = null;
+        try {
+            uri = new URIBuilder("http://chitchat.andrej.com/messages")
+                    .addParameter("username", sender)
+                    .build();
+
+            String message = mapper.writeValueAsString(new PoslanoSporocilo(receiver, content));
+
+            responseBody = Request.Post(uri)
+                    .bodyString(message, ContentType.APPLICATION_JSON)
+                    .execute()
+                    .returnContent()
+                    .asString();
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+    }
 
     //POSILJANJE JAVNEGA SPOROCILA
-    public static void sentGlobal (String posiljatelj, String sporocilo){
-        try{
-            URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
-                    .addParameter("username", posiljatelj)
+    public static void sendGlobalMessage(String sender, String content) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDateFormat(new ISO8601DateFormat());
+
+        URI uri = null;
+        String responseBody = "";
+        try {
+            uri = new URIBuilder("http://chitchat.andrej.com/messages")
+                    .addParameter("username", sender)
                     .build();
-            String message = "{ \"global\" : true, \"text\" : \"" + sporocilo + "\" }";
+            String message = mapper.writeValueAsString(new PoslanoSporocilo(content));
 
-
-            String responseBody = Request.Post(uri)
-                    .bodyString(sporocilo, ContentType.APPLICATION_JSON)
+            responseBody = Request.Post(uri)
+                    .bodyString(message, ContentType.APPLICATION_JSON)
                     .execute()
                     .returnContent()
                     .asString();
 
-            System.out.println(responseBody);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
         } catch (URISyntaxException e) {
             e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+
     }
 
-    //POSILJANJE ZASEBNEGA SPOROCILA
-    public static void sentPrivate (String posiljatelj, String prejemnik, String sporocilo ){
-        try{
-            URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
-                    .addParameter("username", posiljatelj)
-                    .build();
-            String message = "{ \"global\" : false, \"recipient\" : " + prejemnik + ", \"text\" : \"" + sporocilo + "\" }";
 
+    public static ArrayList<PrejetoSporocilo> prejeto(String me) throws URISyntaxException, ClientProtocolException, IOException {
 
-            String responseBody = Request.Post(uri)
-                    .bodyString(sporocilo, ContentType.APPLICATION_JSON)
-                    .execute()
-                    .returnContent()
-                    .asString();
+        URI uri = null;
+        uri = new URIBuilder("http://chitchat.andrej.com/messages")
+                .addParameter("username", me)
+                .build();
+        String responseBody = Request.Get(uri)
+                .execute()
+                .returnContent()
+                .asString();
+        return vSeznamSporocil(responseBody);
 
-            System.out.println(responseBody);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
     }
 
-    // SPREJME PREJETA SPOROCILA
-    public static ArrayList<PrejetoSporocilo> prejeto(String prejemnik) {
-        try{
-            URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
-                    .addParameter("username", prejemnik)
-                    .build();
 
-            String responseBody = Request.Get(uri)
-                    .execute()
-                    .returnContent()
-                    .asString();
+    private static ArrayList<PrejetoSporocilo> vSeznamSporocil(String neurejenoSporocilo) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setDateFormat(new ISO8601DateFormat());
 
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setDateFormat(new ISO8601DateFormat());
+        TypeReference<List<PrejetoSporocilo>> t = new TypeReference<List<PrejetoSporocilo>>() {
+        };
+        ArrayList<PrejetoSporocilo> prejetaSporocila = mapper.readValue(neurejenoSporocilo, t);
 
-            TypeReference<List<PrejetoSporocilo>> t = new TypeReference<List<PrejetoSporocilo>>() { };
-            //ArrayList<PrejetoSporocilo> prejetaSporocila = mapper.readValue(responseBody, t);
-
-            return mapper.readValue(responseBody, t);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return prejetaSporocila;
+    }
+}
 
 
-    }}
+
 

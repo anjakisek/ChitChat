@@ -1,12 +1,15 @@
 package com.company;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class ChitChatFrame extends JFrame implements ActionListener, KeyListener {
 
-    private boolean prvicZagnan=true;
+    private boolean prvicZagnan = true;
     private JTextPane output;
     private JTextField input;
     private JPanel vzdevek;
@@ -21,12 +24,24 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
     private PrejetoRobot robot;
 
+    private String currentUser;
+
     public ChitChatFrame() {
         super();
         setTitle("ChitChat");
         Container pane = this.getContentPane();
         pane.setLayout(new GridBagLayout());
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        robot = new PrejetoRobot(this);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (currentUser != null) {
+                    Server.odjava(currentUser);
+                }
+                e.getWindow().dispose();
+            }
+        });
 
         //Prednastavljeno je na javno sporočilo
         this.javno = true;
@@ -60,7 +75,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
         // seznam uporabnikov desno
         this.uporabniki = new JPanel();
-        JLabel napis2 = new JLabel ("Uporabniki: ");
+        JLabel napis2 = new JLabel("Uporabniki: ");
         this.uporabnikiOutput = new JTextPane();
         uporabnikiOutput.setPreferredSize(new Dimension(100, 200));
         this.uporabnikiOutput.setEditable(false);
@@ -93,8 +108,6 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         uporabniki.add(javnoGumb);
 
 
-
-
         //Glavno okno za izpis sporocil
 
         this.output = new JTextPane();
@@ -105,7 +118,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         outputConstraint.fill = GridBagConstraints.BOTH;
         outputConstraint.weightx = 1.0;
         outputConstraint.weighty = 1.0;
-        outputConstraint.gridx =0;
+        outputConstraint.gridx = 0;
         outputConstraint.gridy = 1;
         pane.add(scrollPane, outputConstraint);
 
@@ -116,7 +129,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         GridBagConstraints inputConstraint = new GridBagConstraints();
         inputConstraint.fill = GridBagConstraints.BOTH;
         inputConstraint.weightx = 1.0;
-        inputConstraint.gridx =0;
+        inputConstraint.gridx = 0;
         inputConstraint.gridy = 3;
         pane.add(input, inputConstraint);
         input.addKeyListener(this);
@@ -131,11 +144,10 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     }
 
     /**
-     * @param person - the person sending the message
+     * @param person  - the person sending the message
      * @param message - the message content
      */
     // izpise sporocilo v glavno okno
-
     public void izpisiSporocilo(String person, String message) {
         String chat = this.output.getText();
         this.output.setText(chat + person + ": " + message + "\n");
@@ -147,59 +159,71 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         //PRIJAVA
         if (e.getSource() == prijava) {
             //Ce je prijava uspesna
-            if (Server.prijava(this.vzdevekInput.getText())){
+            currentUser = vzdevekInput.getText();
+            if (currentUser.length() < 1) {
+                //TODO
+            }
+
+            if (Server.prijava(currentUser)) {
                 if (prvicZagnan) {
                     robot.activate();
-                    prvicZagnan=false;
+                    System.out.println("Zagnal sem robota");
+                    prvicZagnan = false;
                 }
                 this.prijava.setEnabled(false);
                 this.odjava.setEnabled(true);
                 this.input.setEditable(true);
                 this.vzdevekInput.setEditable(false);
                 this.javnoGumb.setEnabled(true);
-                izpisiSporocilo(this.vzdevekInput.getText(), "Uspesno prijavljen!");
+                izpisiSporocilo(currentUser, "Uspesno prijavljen!");
             } else {
                 //ce prijava ni uspesna
-                izpisiSporocilo(this.vzdevekInput.getText(), "Ni uspesno prijavljen!");
+                izpisiSporocilo(currentUser, "Ni uspesno prijavljen!");
             }
 
             //ODJAVA
-        }else if(e.getSource() == odjava){
-            if (Server.odjava(this.vzdevekInput.getText())){
+        } else if (e.getSource() == odjava) {
+            if (Server.odjava(currentUser)) {
+                currentUser = null;
                 this.prijava.setEnabled(true);
                 this.odjava.setEnabled(false);
                 this.input.setEditable(false);
                 this.vzdevekInput.setEditable(true);
-                izpisiSporocilo(this.vzdevekInput.getText(), "Uspesno odjavljen!");
+                izpisiSporocilo(currentUser, "Uspesno odjavljen!");
 
             } else {
-                izpisiSporocilo(this.vzdevekInput.getText(), "Neuspesno odjavljen!");
+                izpisiSporocilo(currentUser, "Neuspesno odjavljen!");
             }
 
             //Ce je gumb javno ugasnjen, posiljamo sporocila javno, ce je onemogoceno pisanje prejemnika, vpisanemu prejemniku posljemo zasebno sporocilo
-        } else if (e.getSource() == javnoGumb){
+        } else if (e.getSource() == javnoGumb) {
             javnoGumb.setEnabled(false);
             this.javno = true;
             zasebnoGumb.setEditable(true);
         }
-        }
+    }
 
 
-        // ob kliku na enter poslje sporocilo
+    // ob kliku na enter poslje sporocilo
     public void keyTyped(KeyEvent e) {
-        if (e.getSource() == this.input) {
+        if (e.getSource() == this.input && currentUser != null) {
             if (e.getKeyChar() == '\n') {
                 if (this.javno == true) {
-                    this.izpisiSporocilo(this.vzdevekInput.getText(), this.input.getText());
+                    System.out.println(this.javno);
+                    Server.sentGlobal(currentUser, this.input.getText());
+                    this.izpisiSporocilo(currentUser, this.input.getText());
 
-                } else if (this.javno == false){
-                    this.izpisiSporocilo(this.vzdevekInput.getText() + " to " + this.uporabnikiOutput.getText(), this.input.getText());
+                } else if (this.javno == false) {
+                    System.out.println(this.javno);
+                    //TODO dodaj kontrolo, da je vpisani res uporabnik
+                    Server.sentPrivate(currentUser, this.zasebnoGumb.getText(),this.input.getText());
+                    this.izpisiSporocilo(currentUser + " to " + this.zasebnoGumb.getText(), this.input.getText());
                 }
 
                 this.input.setText("");
             }
-        } else if (e.getSource() == this.zasebnoGumb){
-            if (e.getKeyChar() == '\n'){
+        } else if (e.getSource() == this.zasebnoGumb) {
+            if (e.getKeyChar() == '\n') {
                 this.javno = false;
                 this.zasebnoGumb.setEditable(false);
                 this.javnoGumb.setEnabled(true);
@@ -208,8 +232,16 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     }
 
     //prejeta sporocila prepozna in jih izpise na ekran
-    public void sprejmiSporocilo(){
-        ArrayList<PrejetoSporocilo> seznam = Server.prejeto(this.vzdevekInput.getText());
+    public void sprejmiSporocilo() {
+        ArrayList<PrejetoSporocilo> seznam = null;
+        try {
+            seznam = Server.prejeto(currentUser);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (!seznam.isEmpty()){
         for (PrejetoSporocilo posta : seznam) {
             boolean global = posta.getGlobal();
             String recipient = posta.getRecipient();
@@ -217,17 +249,14 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
             String text = posta.getText();
             String sendAt = posta.getSentAt();
 
-            if (global){
+            if (global) {
                 izpisiSporocilo(sender, text + " (send at " + sendAt + ")");
             } else {
                 izpisiSporocilo(sender + " to " + recipient, text + " (send at " + sendAt + ")");
             }
 
-    }}
-
-
-
-
+        }}
+    }
 
 
     public void keyPressed(KeyEvent e) {
@@ -237,17 +266,14 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
 
     //danega uporabnika izpise na ekran
-    public void izpisiUporabnika(Uporabnik oseba){
-        String username = oseba.getUsername();
-        String lastActive = oseba.getLastActive();
+    public void izpisiUporabnika(Uporabnik oseba) {
         String aktivni = this.uporabnikiOutput.getText();
-        this.uporabnikiOutput.setText(aktivni + username + " (last active: " + lastActive + " ) \n");
-        }
+        this.uporabnikiOutput.setText(aktivni + oseba.toString() + "\n");
+    }
 
 
-
-        //pobrise uporabnike na ekranu
-    public void pobrisiUporabnike(){
+    //pobrise uporabnike na ekranu
+    public void pobrisiUporabnike() {
         this.uporabnikiOutput.setText("");
     }
 
