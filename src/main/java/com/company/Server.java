@@ -118,8 +118,6 @@ public class Server {
 
         } catch (URISyntaxException e) {
             e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -128,6 +126,7 @@ public class Server {
     }
 
 
+    // Sprejme sporocila na danega uporabnika
     public static ArrayList<PrejetoSporocilo> prejeto(String me) throws URISyntaxException, ClientProtocolException, IOException {
 
         URI uri = null;

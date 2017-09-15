@@ -12,7 +12,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-
 /**
  * Created by Anja on 3. 09. 2017.
  */
@@ -32,25 +31,26 @@ public class UporabnikiRobot extends TimerTask {
 
     @Override
     public void run() {
-        try {String responseBody = Request.Get("http://chitchat.andrej.com/users")
-                .execute()
-                .returnContent()
-                .asString();
+        try {
+            String responseBody = Request.Get("http://chitchat.andrej.com/users")
+                    .execute()
+                    .returnContent()
+                    .asString();
+
             //Dobili smo seznam uporabnikov
 
             ObjectMapper mapper = new ObjectMapper();
             mapper.setDateFormat(new ISO8601DateFormat());
 
-            TypeReference<List<Uporabnik>> t = new TypeReference<List<Uporabnik>>() { };
+            TypeReference<List<Uporabnik>> t = new TypeReference<List<Uporabnik>>() {
+            };
             ArrayList<Uporabnik> uporabniki = mapper.readValue(responseBody, t);
 
             chat.pobrisiUporabnike();
 
-            for (Uporabnik oseba: uporabniki){
+            for (Uporabnik oseba : uporabniki) {
                 chat.izpisiUporabnika(oseba);
             }
-
-
 
 
         } catch (IOException e) {

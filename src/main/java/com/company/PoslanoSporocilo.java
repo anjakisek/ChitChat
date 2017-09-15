@@ -2,7 +2,7 @@ package com.company;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
+//Sporocilo je objekt z atributi vsebina, global in prejemnik.
 public class PoslanoSporocilo {
     private String vsebina;
     private Boolean global;

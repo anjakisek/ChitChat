@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
+
+//Vsako prejeto sporocilo je objekt s spodnjimi atributi
 public class PrejetoSporocilo {
     private Boolean global;
     private String recipient;
@@ -13,7 +15,8 @@ public class PrejetoSporocilo {
     private String text;
     private String sent_at;
 
-    private PrejetoSporocilo(){}
+    private PrejetoSporocilo() {
+    }
 
     public PrejetoSporocilo(Boolean global, String recipient, String sender, String text, String sent_at) {
         this.global = global;
@@ -22,7 +25,6 @@ public class PrejetoSporocilo {
         this.text = text;
         this.sent_at = sent_at;
     }
-
 
 
     @JsonProperty("global")
@@ -75,7 +77,7 @@ public class PrejetoSporocilo {
         this.sent_at = sent_at;
     }
 
-    public Date getDateActive(){
+    public Date getDateActive() {
         ISO8601DateFormat df = new ISO8601DateFormat();
         try {
             return df.parse(sent_at);
