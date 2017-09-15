@@ -19,6 +19,7 @@ import java.util.TimerTask;
 public class UporabnikiRobot extends TimerTask {
     private ChitChatFrame chat;
 
+
     //Ko ga aktiviramo, zacne meriti cas
     public void activate() {
         Timer timer = new Timer();

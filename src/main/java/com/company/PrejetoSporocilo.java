@@ -1,6 +1,10 @@
 package com.company;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+
+import java.text.ParseException;
+import java.util.Date;
 
 public class PrejetoSporocilo {
     private Boolean global;
@@ -69,5 +73,15 @@ public class PrejetoSporocilo {
 
     public void setSentAt(String sent_at) {
         this.sent_at = sent_at;
+    }
+
+    public Date getDateActive(){
+        ISO8601DateFormat df = new ISO8601DateFormat();
+        try {
+            return df.parse(sent_at);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

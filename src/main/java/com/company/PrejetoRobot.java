@@ -25,8 +25,5 @@ public class PrejetoRobot extends TimerTask {
     public void run(){
         chat.sprejmiSporocilo();
 
-
-
-
     }
 }

@@ -62,5 +62,5 @@ public class PoslanoSporocilo {
     public void setPrejemnik(String prejemnik) {
         this.prejemnik = prejemnik;
     }
-}
+
 }

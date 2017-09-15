@@ -29,7 +29,7 @@ public class Uporabnik {
     }
 
     public String toString() {
-        return username + " (last active " + new SimpleDateFormat("dd. MM. yyyy, hh:mm").format(getDateActive()) + ")";
+        return username + " (last active " + new SimpleDateFormat("hh:mm").format(getDateActive()) + ")";
     }
 
     public void setUsername(String username) {

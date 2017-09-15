@@ -5,18 +5,20 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
 
 public class ChitChatFrame extends JFrame implements ActionListener, KeyListener {
 
     private boolean prvicZagnan = true;
     private JTextPane output;
     private JTextField input;
-    private JPanel vzdevek;
     private JTextField vzdevekInput;
     private JButton prijava;
     private JButton odjava;
-    private JPanel uporabniki;
     private JTextPane uporabnikiOutput;
     private JButton javnoGumb;
     private JTextField zasebnoGumb;
@@ -48,7 +50,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
 
         // Zgornje okence za vnos uporabniskega imena
-        this.vzdevek = new JPanel();
+        JPanel vzdevek = new JPanel();
         JLabel napis = new JLabel("Vzdevek");
         this.vzdevekInput = new JTextField(System.getProperty("user.name"), 40);
         this.vzdevekInput.setEditable(true);
@@ -74,7 +76,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
 
         // seznam uporabnikov desno
-        this.uporabniki = new JPanel();
+        JPanel uporabniki = new JPanel();
         JLabel napis2 = new JLabel("Uporabniki: ");
         this.uporabnikiOutput = new JTextPane();
         uporabnikiOutput.setPreferredSize(new Dimension(100, 200));
@@ -148,37 +150,39 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
      * @param message - the message content
      */
     // izpise sporocilo v glavno okno
-    public void izpisiSporocilo(String person, String message) {
+    private void izpisiSporocilo(String cas, String person, String message) {
         String chat = this.output.getText();
-        this.output.setText(chat + person + ": " + message + "\n");
+        this.output.setText(chat + cas + " " + person + ": " + message + "\n");
     }
 
     // odziva se na klike na gumbe
     public void actionPerformed(ActionEvent e) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalDateTime dateTime = LocalDateTime.now();
+        String formattedDateTime = dateTime.format(formatter);
 
         //PRIJAVA
         if (e.getSource() == prijava) {
             //Ce je prijava uspesna
             currentUser = vzdevekInput.getText();
-            if (currentUser.length() < 1) {
-                //TODO
-            }
+            if (currentUser.length() >= 1) {
 
-            if (Server.prijava(currentUser)) {
-                if (prvicZagnan) {
-                    robot.activate();
-                    System.out.println("Zagnal sem robota");
-                    prvicZagnan = false;
+
+                if (Server.prijava(currentUser)) {
+                    if (prvicZagnan) {
+                        robot.activate();
+                        prvicZagnan = false;
+                    }
+                    this.prijava.setEnabled(false);
+                    this.odjava.setEnabled(true);
+                    this.input.setEditable(true);
+                    this.vzdevekInput.setEditable(false);
+                    this.zasebnoGumb.setEditable(true);
+                    izpisiSporocilo(formattedDateTime,  currentUser, "Uspesno prijavljen!");
+                } else {
+                    //ce prijava ni uspesna
+                    izpisiSporocilo(formattedDateTime,  currentUser, "Ni uspesno prijavljen!");
                 }
-                this.prijava.setEnabled(false);
-                this.odjava.setEnabled(true);
-                this.input.setEditable(true);
-                this.vzdevekInput.setEditable(false);
-                this.javnoGumb.setEnabled(true);
-                izpisiSporocilo(currentUser, "Uspesno prijavljen!");
-            } else {
-                //ce prijava ni uspesna
-                izpisiSporocilo(currentUser, "Ni uspesno prijavljen!");
             }
 
             //ODJAVA
@@ -189,10 +193,10 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
                 this.odjava.setEnabled(false);
                 this.input.setEditable(false);
                 this.vzdevekInput.setEditable(true);
-                izpisiSporocilo(currentUser, "Uspesno odjavljen!");
+                izpisiSporocilo(formattedDateTime, currentUser, "Uspesno odjavljen!");
 
             } else {
-                izpisiSporocilo(currentUser, "Neuspesno odjavljen!");
+                izpisiSporocilo(formattedDateTime, currentUser, "Neuspesno odjavljen!");
             }
 
             //Ce je gumb javno ugasnjen, posiljamo sporocila javno, ce je onemogoceno pisanje prejemnika, vpisanemu prejemniku posljemo zasebno sporocilo
@@ -208,16 +212,19 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     public void keyTyped(KeyEvent e) {
         if (e.getSource() == this.input && currentUser != null) {
             if (e.getKeyChar() == '\n') {
-                if (this.javno == true) {
-                    System.out.println(this.javno);
-                    Server.sentGlobal(currentUser, this.input.getText());
-                    this.izpisiSporocilo(currentUser, this.input.getText());
 
-                } else if (this.javno == false) {
-                    System.out.println(this.javno);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                LocalDateTime dateTime = LocalDateTime.now();
+                String formattedDateTime = dateTime.format(formatter);
+
+                if (this.javno) {
+                    Server.sendGlobal(currentUser, this.input.getText());
+                    this.izpisiSporocilo(formattedDateTime, currentUser, this.input.getText());
+
+                } else {
                     //TODO dodaj kontrolo, da je vpisani res uporabnik
-                    Server.sentPrivate(currentUser, this.zasebnoGumb.getText(),this.input.getText());
-                    this.izpisiSporocilo(currentUser + " to " + this.zasebnoGumb.getText(), this.input.getText());
+                    Server.sendPrivate(currentUser, this.zasebnoGumb.getText(), this.input.getText());
+                    this.izpisiSporocilo(formattedDateTime , currentUser + " to " + this.zasebnoGumb.getText(), this.input.getText());
                 }
 
                 this.input.setText("");
@@ -232,7 +239,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
     }
 
     //prejeta sporocila prepozna in jih izpise na ekran
-    public void sprejmiSporocilo() {
+    private void sprejmiSporocilo() {
         ArrayList<PrejetoSporocilo> seznam = null;
         try {
             seznam = Server.prejeto(currentUser);
@@ -241,21 +248,22 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (!seznam.isEmpty()){
-        for (PrejetoSporocilo posta : seznam) {
-            boolean global = posta.getGlobal();
-            String recipient = posta.getRecipient();
-            String sender = posta.getSender();
-            String text = posta.getText();
-            String sendAt = posta.getSentAt();
+        assert seznam != null;
+        if (!seznam.isEmpty()) {
+            for (PrejetoSporocilo posta : seznam) {
+                boolean global = posta.getGlobal();
+                String recipient = posta.getRecipient();
+                String sender = posta.getSender();
+                String text = posta.getText();
 
-            if (global) {
-                izpisiSporocilo(sender, text + " (send at " + sendAt + ")");
-            } else {
-                izpisiSporocilo(sender + " to " + recipient, text + " (send at " + sendAt + ")");
+                if (global) {
+                    izpisiSporocilo(new SimpleDateFormat("hh:mm").format(posta.getDateActive()), sender, text);
+                } else {
+                    izpisiSporocilo(new SimpleDateFormat("hh:mm").format(posta.getDateActive()), sender + " to " + recipient, text);
+                }
+
             }
-
-        }}
+        }
     }
 
 
@@ -267,8 +275,10 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
 
     //danega uporabnika izpise na ekran
     public void izpisiUporabnika(Uporabnik oseba) {
-        String aktivni = this.uporabnikiOutput.getText();
-        this.uporabnikiOutput.setText(aktivni + oseba.toString() + "\n");
+        if (!oseba.getUsername().equals("me")) {
+            String aktivni = this.uporabnikiOutput.getText();
+            this.uporabnikiOutput.setText(aktivni + oseba.toString() + "\n");
+        }
     }
 
 

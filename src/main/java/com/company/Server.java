@@ -69,7 +69,7 @@ public class Server {
 
 
     //POSILJANJE ZASEBNEGA SPOROCILA
-    public static void sendPrivateMessage(String sender, String receiver, String content) {
+    public static void sendPrivate(String sender, String receiver, String content) {
         ObjectMapper mapper = new ObjectMapper();
 
         URI uri = null;
@@ -98,7 +98,7 @@ public class Server {
     }
 
     //POSILJANJE JAVNEGA SPOROCILA
-    public static void sendGlobalMessage(String sender, String content) {
+    public static void sendGlobal(String sender, String content) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setDateFormat(new ISO8601DateFormat());
 
