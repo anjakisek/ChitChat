@@ -11,15 +11,21 @@ import java.util.TimerTask;
 public class PrejetoRobot extends TimerTask {
 
     private ChitChatFrame chat;
+    private Timer timer;
 
     //Ko ga aktiviramo, zacne meriti cas
     public void activate() {
-        Timer timer = new Timer();
         timer.scheduleAtFixedRate(this, 3000, 3000);
+    }
+
+    public void deactivate(){
+        timer.cancel();
     }
 
     public PrejetoRobot(ChitChatFrame chat) {
         this.chat = chat;
+        this.timer = new Timer();
+
     }
 
     public void run(){

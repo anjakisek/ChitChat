@@ -46,12 +46,7 @@ public class UporabnikiRobot extends TimerTask {
             };
             ArrayList<Uporabnik> uporabniki = mapper.readValue(responseBody, t);
 
-            chat.pobrisiUporabnike();
-
-            for (Uporabnik oseba : uporabniki) {
-                chat.izpisiUporabnika(oseba);
-            }
-
+            chat.posodobiUporabnike(uporabniki);
 
         } catch (IOException e) {
             e.printStackTrace();

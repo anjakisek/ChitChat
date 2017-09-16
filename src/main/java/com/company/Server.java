@@ -28,11 +28,9 @@ public class Server {
             URI uri = new URIBuilder("http://chitchat.andrej.com/users")
                     .addParameter("username", uporabnik).build();
             HttpResponse response = Request.Post(uri).execute().returnResponse();
-            System.out.println(response.getStatusLine());
             InputStream responseBody = null;
 
             if (response.getStatusLine().getStatusCode() == 200) {
-                System.out.println("vse je ok");
                 return true;
             }
 
@@ -41,7 +39,6 @@ public class Server {
         } catch (URISyntaxException e1) {
             e1.printStackTrace();
         }
-        System.out.println("neka napaka je");
         return false;
     }
 
