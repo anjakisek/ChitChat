@@ -1,4 +1,6 @@
-package com.company;
+package si.fmf.chitchat.roboti;
+
+import si.fmf.chitchat.ChitChatFrame;
 
 import java.util.Timer;
 import java.util.TimerTask;

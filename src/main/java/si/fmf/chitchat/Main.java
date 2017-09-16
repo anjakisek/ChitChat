@@ -1,4 +1,6 @@
-package com.company;
+package si.fmf.chitchat;
+
+import si.fmf.chitchat.roboti.UporabnikiRobot;
 
 public class Main {
 

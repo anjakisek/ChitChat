@@ -1,4 +1,4 @@
-package com.company;
+package si.fmf.chitchat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;

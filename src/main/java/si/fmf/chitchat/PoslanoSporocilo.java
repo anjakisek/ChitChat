@@ -1,4 +1,4 @@
-package com.company;
+package si.fmf.chitchat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

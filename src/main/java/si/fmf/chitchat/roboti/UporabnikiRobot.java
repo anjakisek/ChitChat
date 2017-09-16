@@ -1,9 +1,11 @@
-package com.company;
+package si.fmf.chitchat.roboti;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.apache.http.client.fluent.Request;
+import si.fmf.chitchat.ChitChatFrame;
+import si.fmf.chitchat.Uporabnik;
 
 import java.io.IOException;
 import java.util.ArrayList;

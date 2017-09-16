@@ -1,4 +1,6 @@
-package com.company;
+package si.fmf.chitchat;
+
+import si.fmf.chitchat.roboti.PrejetoRobot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -258,9 +260,7 @@ public class ChitChatFrame extends JFrame implements ActionListener, KeyListener
         ArrayList<PrejetoSporocilo> seznam = null;
         try {
             seznam = Server.prejeto(currentUser);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
         }
         assert seznam != null;
